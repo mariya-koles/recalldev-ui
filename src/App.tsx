@@ -1,25 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Questions from './pages/Questions';
+import QuestionForm from './pages/QuestionForm';
+import Search from './pages/Search';
+import Tags from './pages/Tags';
+import './index.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Questions />} />
+          <Route path="/questions/new" element={<QuestionForm />} />
+          <Route path="/questions/:id/edit" element={<QuestionForm />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/tags" element={<Tags />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
 
