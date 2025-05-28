@@ -87,9 +87,14 @@ class ApiService {
 
   // Tags API
   async getTags(includeQuestions: boolean = false): Promise<Tag[]> {
-    const response = await this.api.get('/tags', {
-      params: { includeQuestions },
-    });
+    // Try different parameter names the backend might expect
+    const params: any = {};
+    if (includeQuestions) {
+      params.includeQuestions = true;
+      params.withQuestions = true; // Alternative parameter name
+    }
+    
+    const response = await this.api.get('/tags', { params });
     return response.data;
   }
 
@@ -132,6 +137,38 @@ class ApiService {
   async getTagsWithoutQuestions(): Promise<Tag[]> {
     const response = await this.api.get('/tags/without-questions');
     return response.data;
+  }
+
+  // Helper method to get question count for each tag
+  async getTagsWithQuestionCounts(): Promise<Tag[]> {
+    try {
+      // Get all tags first
+      const tags = await this.getTags(false);
+      
+      // For each tag, get the questions that have this tag
+      const tagsWithCounts = await Promise.all(
+        tags.map(async (tag) => {
+          try {
+            const questions = await this.getQuestionsByTag(tag.name);
+            return {
+              ...tag,
+              questions: questions
+            };
+          } catch (error) {
+            console.warn(`Failed to get questions for tag ${tag.name}:`, error);
+            return {
+              ...tag,
+              questions: []
+            };
+          }
+        })
+      );
+      
+      return tagsWithCounts;
+    } catch (error) {
+      console.error('Error getting tags with question counts:', error);
+      throw error;
+    }
   }
 }
 

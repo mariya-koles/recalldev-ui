@@ -19,7 +19,18 @@ const Tags: React.FC = () => {
   const loadTags = async () => {
     try {
       setLoading(true);
-      const data = await apiService.getTags(true); // Include questions count
+      
+      console.log('Fetching tags with question counts...');
+      
+      // Use our new method that gets question counts for each tag
+      const data = await apiService.getTagsWithQuestionCounts();
+      console.log('Tags with question counts:', data);
+      
+      // Log individual tag details
+      data.forEach((tag, index) => {
+        console.log(`Tag ${index + 1}: ${tag.name} - ${tag.questions?.length || 0} questions`);
+      });
+      
       setTags(data);
     } catch (err) {
       setError('Failed to load tags');
